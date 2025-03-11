@@ -10,17 +10,29 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
+interface Movie {
+  name: string;
+  link: string;
+}
+
+interface Theatre {
+  id: string;
+  image?: string;
+  address?: string;
+  location?: string;
+  map_url?: string;
+  movies?: Movie[];
+}
+
 export default function CinemaPage() {
-  const [theatres, setTheatres] = useState<any[]>([]);
-  const [news, setNews] = useState<any[]>([]);
+  const [theatres, setTheatres] = useState<Theatre[]>([]);
   const { user, loading } = useAuth();
   const router = useRouter();
-  
-  // State for editing movies for a theatre
+
   const [isMoviesDialogOpen, setIsMoviesDialogOpen] = useState(false);
   const [moviesEditData, setMoviesEditData] = useState<{
     theatreId: string;
-    movies: { name: string; link: string }[];
+    movies: Movie[];
   } | null>(null);
 
   useEffect(() => {
@@ -30,28 +42,18 @@ export default function CinemaPage() {
   }, [user, loading, router]);
 
   useEffect(() => {
-    // Fetch theatres with their keys
     get(ref(db, "theatres")).then((snapshot) => {
       if (snapshot.exists()) {
-        const data = Object.entries(snapshot.val()).map(([id, value]) => ({
+        const data: Theatre[] = Object.entries(snapshot.val()).map(([id, value]) => ({
           id,
-          ...(typeof value === 'object' && value !== null ? value : {}),
+          ...(typeof value === "object" && value !== null ? (value as Theatre) : {}),
         }));
         setTheatres(data);
       }
     });
-
-    // Fetch news (unchanged)
-    get(ref(db, "news")).then((snapshot) => {
-      if (snapshot.exists()) {
-        setNews(Object.values(snapshot.val()));
-      }
-    });
   }, []);
 
-  // Callback for Table's "Actions" edit button
-  const handleEditMovies = (row: any) => {
-    // Open dialog with the theatre's movies (or an empty array if none)
+  const handleEditMovies = (row: Theatre) => {
     setMoviesEditData({
       theatreId: row.id,
       movies: row.movies || [],
@@ -59,7 +61,6 @@ export default function CinemaPage() {
     setIsMoviesDialogOpen(true);
   };
 
-  // Save the edited movies array back to Firebase for the theatre
   const handleSaveMovies = () => {
     if (moviesEditData) {
       const theatreRef = ref(db, `theatres/${moviesEditData.theatreId}`);
@@ -70,34 +71,21 @@ export default function CinemaPage() {
     }
   };
 
-  // Render data for the Table.
-  // We include the theatre id in the mapped data so that the edit callback receives it.
   const tableData = theatres.map((theatre) => ({
     id: theatre.id,
     image: theatre.image || "",
     address: theatre.address || "N/A",
     location: theatre.location || "N/A",
     map_url: theatre.map_url || "#",
-    movies:
-      theatre.movies?.map((movie: any) => ({
-        name: movie.name || "N/A",
-        link: movie.link || "",
-      })) || [],
+    movies: theatre.movies || [],
   }));
 
   return (
     <div className="p-6 space-y-8">
       <h1 className="text-2xl font-semibold">Cinemas List</h1>
-
       <div>
-        <Table
-          headers={["Image", "Address", "Google Map", "Movies", "Actions"]}
-          data={tableData}
-          onEdit={handleEditMovies}
-        />
+        <Table headers={["Image", "Address", "Google Map", "Movies", "Actions"]} data={tableData} onEdit={handleEditMovies} />
       </div>
-
-      {/* Movies Editing Dialog */}
       <Dialog
         isOpen={isMoviesDialogOpen}
         onClose={() => {
@@ -107,10 +95,13 @@ export default function CinemaPage() {
         title="Edit Movies"
         footer={
           <>
-            <Button variant="outline" onClick={() => {
-              setIsMoviesDialogOpen(false);
-              setMoviesEditData(null);
-            }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsMoviesDialogOpen(false);
+                setMoviesEditData(null);
+              }}
+            >
               Cancel
             </Button>
             <Button onClick={handleSaveMovies}>Save</Button>
@@ -125,9 +116,9 @@ export default function CinemaPage() {
                 placeholder="Movie Name"
                 value={movie.name}
                 onChange={(e) => {
-                  const newMovies = [...(moviesEditData?.movies || [])];
+                  const newMovies = [...moviesEditData.movies];
                   newMovies[index] = { ...newMovies[index], name: e.target.value };
-                  setMoviesEditData({ ...moviesEditData!, movies: newMovies });
+                  setMoviesEditData({ ...moviesEditData, movies: newMovies });
                 }}
               />
               <Input
@@ -135,33 +126,20 @@ export default function CinemaPage() {
                 placeholder="Poster Link"
                 value={movie.link}
                 onChange={(e) => {
-                  const newMovies = [...(moviesEditData?.movies || [])];
+                  const newMovies = [...moviesEditData.movies];
                   newMovies[index] = { ...newMovies[index], link: e.target.value };
-                  setMoviesEditData({ ...moviesEditData!, movies: newMovies });
+                  setMoviesEditData({ ...moviesEditData, movies: newMovies });
                 }}
               />
               <button
                 onClick={() => {
-                  const newMovies = [...(moviesEditData?.movies || [])];
-                  newMovies.splice(index, 1);
-                  setMoviesEditData({ ...moviesEditData!, movies: newMovies });
+                  const newMovies = moviesEditData.movies.filter((_, i) => i !== index);
+                  setMoviesEditData({ ...moviesEditData, movies: newMovies });
                 }}
                 className="text-red-600 hover:text-red-800"
               >
-                {/* Trash icon */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4a1 1 0 011 1v1H9V4a1 1 0 011-1z"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4a1 1 0 011 1v1H9V4a1 1 0 011-1z" />
                 </svg>
               </button>
             </div>
@@ -169,9 +147,9 @@ export default function CinemaPage() {
           <Button
             variant="ghost"
             onClick={() => {
-              const newMovies = [...(moviesEditData?.movies || [])];
-              newMovies.push({ name: "", link: "" });
-              setMoviesEditData({ ...moviesEditData!, movies: newMovies });
+              setMoviesEditData((prev) =>
+                prev ? { ...prev, movies: [...prev.movies, { name: "", link: "" }] } : null
+              );
             }}
           >
             Add Movie

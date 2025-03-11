@@ -21,8 +21,12 @@ export default function HomePage() {
     try {
       await signIn(email, password);
       router.push("/dashboard"); // Redirect to dashboard on successful sign in.
-    } catch (err: any) {
-      setError(err.message || "Failed to sign in");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to sign in");
+      } else {
+        setError("Failed to sign in");
+      }
     }
   };
 
@@ -31,7 +35,7 @@ export default function HomePage() {
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <div className="flex flex-col items-center mb-6">
           <Image src="/PT Logo.png" alt="Logo" width={160} height={160} />
-          <h1 className="text-2xl font-bold mt-4 text-gray-800">Website's Dashboard</h1>
+          <h1 className="text-2xl font-bold mt-4 text-gray-800">Website&apos;s Dashboard</h1>
           <p className="text-gray-500">Sign in to continue</p>
         </div>
         {error && <div className="mb-4 text-red-600 text-center">{error}</div>}

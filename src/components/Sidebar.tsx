@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Home, Users, Film, Newspaper, LogOut } from "lucide-react";
 import { lusitana } from "@/utils/fonts";
 import { useAuth } from "@/context/AuthContext";
+import Image from 'next/image';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -32,7 +33,7 @@ export default function Sidebar() {
       <div className="mb-2 flex h-20 items-end justify-start bg-blue-600 p-4 md:h-40 m-2 rounded-lg">
         <div className="w-32 text-white md:w-40 -ml-2">
           <div className={`${lusitana.className} flex flex-row items-center leading-none text-white`}>
-            <img src="/PT Logo.png" alt="PictureTime Logo" width={60} />
+            <Image src="/PT Logo.png" alt="PictureTime Logo" width={60} height={60}/>
             <p className="text-[28px]">PictureTime</p>
           </div>
         </div>

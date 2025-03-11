@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 interface TableProps {
   headers: string[];
   data: { [key: string]: any }[];
@@ -15,60 +13,68 @@ export function Table({ headers, data, onEdit, onDelete, onRowClick }: TableProp
   const renderCellContent = (header: string, row: any) => {
     switch (header) {
       case "Image":
-        return row.image ? (
-          <a
-            href={row.image}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
-          >
-            {truncateText(row.location)}
-          </a>
-        ) : (
-          "-"
-        );
+        if (row.image) {
+          return (
+            <a
+              href={row.image}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              {truncateText(row.location)}
+            </a>
+          );
+        } else {
+          return "-";
+        }
 
       case "Google Map":
-        return row.map_url ? (
-          <a
-            href={row.map_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 underline"
-          >
-            View Map
-          </a>
-        ) : (
-          "-"
-        );
+        if (row.map_url) {
+          return (
+            <a
+              href={row.map_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 underline"
+            >
+              View Map
+            </a>
+          );
+        } else {
+          return "-";
+        }
 
       case "Article Link":
-        return row.link ? (
-          <a
-            href={row.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
-          >
-            {truncateText(row.source)}
-          </a>
-        ) : (
-          "-"
-        );
+        if (row.link) {
+          return (
+            <a
+              href={row.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              {truncateText(row.source)}
+            </a>
+          );
+        } else {
+          return "-";
+        }
 
       case "Article Image":
-        return row.image ? (
-          <a
-            href={row.image}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
-          >
-            {truncateText(row.source)}
-          </a>
-        ) : (
-          "-"
-        );
+        if (row.image) {
+          return (
+            <a
+              href={row.image}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              {truncateText(row.source)}
+            </a>
+          );
+        } else {
+          return "-";
+        }
 
       case "Movies":
         if (row.movies?.length) {

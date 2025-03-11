@@ -10,15 +10,16 @@ import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
-interface NewsItem {
+export interface NewsItem {
   id: string;
   title: string;
   source: string;
   date: string;
-  amount: string;
   status: string;
   image?: string;
   link?: string;
+  map_url?: string;
+  movies?: { name: string; link: string }[];
 }
 
 export default function DashboardPage() {
@@ -103,7 +104,7 @@ export default function DashboardPage() {
     } else {
       // For a new news item, shift existing keys and write the new item at key "0".
       const newsRef = ref(db, "news");
-      const updates: Record<string, any> = {};
+      const updates: Record<string, NewsItem | Partial<NewsItem>> = {};
       updates["0"] = newsItemToSave;
       news.forEach((item) => {
         const newKey = (parseInt(item.id) + 1).toString();
@@ -122,7 +123,7 @@ export default function DashboardPage() {
       image: row.image || "",
       link: row.link || "",
     });
-    // setEditingNewsId(row.id);
+    setEditingNewsId(row.id);
     setIsEditMode(true);
     setIsDialogOpen(true);
   };
