@@ -17,6 +17,8 @@ export default function Sidebar() {
     { name: "Leads", path: "/dashboard/leads", icon: <Users size={20} /> },
     { name: "Cinemas", path: "/dashboard/cinemas", icon: <Film size={20} /> },
     { name: "News", path: "/dashboard/news", icon: <Newspaper size={20} /> },
+    { name: "Cash Flow Report", path: "/dashboard/cash-flow-report", icon: <Film size={20} /> },
+    { name: "Block/Unblock Seats", path: "/dashboard/block_unblock", icon: <Newspaper size={20} />},
   ];
 
   const handleSignOut = async () => {
