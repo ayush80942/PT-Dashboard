@@ -23,7 +23,7 @@ const CashFlowReportPage: React.FC = () => {
   useEffect(() => {
     const fetchCinemas = async () => {
       try {
-        const res = await fetch('https://agent.picturetime.in/api/cinema/list');
+        const res = await fetch('https://dashboard-backend.picturetime.in/api/cinema/list');
         const data = await res.json();
 
         // ✅ Fix: map 'name' to 'siteName'
@@ -55,7 +55,7 @@ const CashFlowReportPage: React.FC = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://agent.picturetime.in/api/report/download-excel?cinemaId=${cinemaId}&from=${fromDate}&to=${toDate}`
+        `https://dashboard-backend.picturetime.in/api/report/download-excel?cinemaId=${cinemaId}&from=${fromDate}&to=${toDate}`
       );
 
       if (!res.ok) throw new Error('Failed to fetch file.');
