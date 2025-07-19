@@ -147,40 +147,44 @@ const SeatLayout = ({
                 className="grid gap-2"
                 style={{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }}
               >
-                {Array.from({ length: columnCount }, (_, i) => {
-                  const colKey = `col${i + 1}`;
-                  const seatStatus = row[colKey];
-                  const seatLabel = `${row.rowName}${i + 1}`;
+                {(() => {
+                  let visibleSeatCount = 0;
+                  return Array.from({ length: columnCount }, (_, i) => {
+                    const colKey = `col${i + 1}`;
+                    const seatStatus = row[colKey];
 
-                  if (seatStatus !== "Y") {
-                    return <div key={colKey} className="w-10 h-10" />;
-                  }
+                    if (seatStatus !== "Y") {
+                      return <div key={colKey} className="w-10 h-10" />;
+                    }
 
-                  const seatState = getSeatState(seatLabel);
+                    visibleSeatCount++;
+                    const seatLabel = `${row.rowName}${visibleSeatCount}`;
+                    const seatState = getSeatState(seatLabel);
 
-                  return (
-                    <div key={colKey} className="w-10 h-10">
-                      <input
-                        type="checkbox"
-                        id={seatLabel}
-                        name={seatLabel}
-                        className="peer hidden"
-                        checked={selectedSeats.includes(seatLabel)}
-                        onChange={() => toggleSeatSelection(seatLabel)}
-                      />
-                      <label
-                        htmlFor={seatLabel}
-                        className={`w-10 h-10 border rounded flex items-center justify-center text-sm font-medium cursor-pointer shadow-sm
-                          ${seatState === "blocked" ? "bg-gray-400 text-white" : ""}
-                          ${seatState === "available" ? "bg-white" : ""}
-                          ${seatState === "selected" ? "bg-blue-200 border-blue-600 border-2" : ""}
-                        `}
-                      >
-                        {seatLabel}
-                      </label>
-                    </div>
-                  );
-                })}
+                    return (
+                      <div key={colKey} className="w-10 h-10">
+                        <input
+                          type="checkbox"
+                          id={seatLabel}
+                          name={seatLabel}
+                          className="peer hidden"
+                          checked={selectedSeats.includes(seatLabel)}
+                          onChange={() => toggleSeatSelection(seatLabel)}
+                        />
+                        <label
+                          htmlFor={seatLabel}
+                          className={`w-10 h-10 border rounded flex items-center justify-center text-sm font-medium cursor-pointer shadow-sm
+                            ${seatState === "blocked" ? "bg-gray-400 text-white" : ""}
+                            ${seatState === "available" ? "bg-white" : ""}
+                            ${seatState === "selected" ? "bg-blue-200 border-blue-600 border-2" : ""}
+                          `}
+                        >
+                          {seatLabel}
+                        </label>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             </div>
           );
