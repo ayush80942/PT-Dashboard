@@ -263,13 +263,13 @@ const SeatLayout = ({
             >
               Unblock
             </button>
+        </div>
             <button
               onClick={handleSubmit}
               className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 transition"
             >
               Submit
             </button>
-          </div>
 
           {responseMsg && <p className="text-sm mt-2">{responseMsg}</p>}
         </div>
